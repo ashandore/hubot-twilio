@@ -15,8 +15,6 @@ class Twilio extends Adapter
     body = strings.join "\n"
     user = envelope.user
 
-    console.log "Calling send_sms", body
-    console.log user
     @send_sms body, user.phone, (err, message) ->
       if err or not body?
         console.log "Error sending reply SMS: #{err}"
@@ -59,8 +57,7 @@ class Twilio extends Adapter
 
     @receive new TextMessage user, body
 
-  send_sms: (body, to, callback) -> 
-    console.log "Sending SMS to", to, ": ", body    
+  send_sms: (body, to, callback) ->
     @client.messages.create
       to: to
       from: @from

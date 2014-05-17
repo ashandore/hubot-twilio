@@ -12,13 +12,13 @@ class Twilio extends Adapter
     super robot
 
   send: (user, strings...) ->
-    message = strings.join "\n"
+    body = strings.join "\n"
 
-    @send_sms message, user.id, (err, body) ->
+    @send_sms body, user.id, (err, message) ->
       if err or not body?
         console.log "Error sending reply SMS: #{err}"
       else
-        console.log "Sending reply SMS: #{message} to #{user.id}"
+        console.log "Sending reply SMS: #{message.sid}, #{body} to #{user.id}"
 
   reply: (user, strings...) ->
     @send user, str for str in strings
@@ -39,11 +39,13 @@ class Twilio extends Adapter
       response.writeHead 200, 'Content-Type': 'text/plain'
       response.end()
 
+    @client = require('twilio')(@sid, @token)
+
     self.emit "connected"
 
   receive_sms: (body, from) ->
     return if body.length is 0
-    user = @userForId from
+    user = @robot.brain.userForId from
 
     nameRegex = "^[@]?#{@robot.name}"
     if body.match nameRegex is null
@@ -52,23 +54,21 @@ class Twilio extends Adapter
 
     @receive new TextMessage user, body
 
-  send_sms: (message, to, callback) ->
-    auth = new Buffer(@sid + ':' + @token).toString("base64")
-    data = QS.stringify From: @from, To: to, Body: message
-
-    @http("https://api.twilio.com")
-      .path("/2010-04-01/Accounts/#{@sid}/Messages.json")
-      .header("Authorization", "Basic #{auth}")
-      .header("Content-Type", "application/x-www-form-urlencoded")
-      .post(data) (err, res, body) ->
-        if err
+  send_sms: (body, to, callback) ->     
+    @client.messages.create({  
+      to: to,
+      from: @from,    
+      body: body
+    }, function(err, message) { 
+      if err
           callback err
         else if res.statusCode is 201
-          json = JSON.parse(body)
-          callback null, body
+          json = JSON.parse(message)
+          callback null, message
         else
-          json = JSON.parse(body)
-          callback body.message
+          json = JSON.parse(message)
+          callback message
+    })
 
 exports.Twilio = Twilio
 

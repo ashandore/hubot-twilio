@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "coffee-script": "1.1.3",
-    "hubot": ">=0.0.1"
+    "hubot": ">=0.0.1",
+    "twilio": ">=0.0.1"
   },
   "main": "./src/twilio"
 }

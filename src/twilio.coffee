@@ -1,4 +1,5 @@
-{Robot, Adapter, TextMessage}   = require("hubot")
+Robot   = require("hubot").robot()
+Adapter = require("hubot").adapter()
 
 HTTP    = require "http"
 QS      = require "querystring"
@@ -27,8 +28,6 @@ class Twilio extends Adapter
     @hear regex, callback
 
   run: ->
-    self = @
-
     @robot.router.get "/hubot/sms", (request, response) =>
       payload = QS.parse(request.url)
 
@@ -39,25 +38,23 @@ class Twilio extends Adapter
       response.writeHead 200, 'Content-Type': 'text/plain'
       response.end()
 
-    self.emit "connected"
-
   receive_sms: (body, from) ->
     return if body.length is 0
     user = @userForId from
 
-		# TODO Assign self.robot.name here instead of 
-    # if body.match(/^Nurph\b/i) is null
-    #   console.log "I'm adding 'Nurph' as a prefix."
-    #   body = 'Nurph' + '' + body
+		# TODO Assign self.robot.name here instead of Nurph
+    if body.match(/^#{@robot.name}\b/i) is null
+      console.log "I'm adding #{@robot.name} as a prefix."
+      body = @robot.name + '' + body
 
-    @receive new TextMessage user, body
+    @receive new Robot.TextMessage user, body
 
   send_sms: (message, to, callback) ->
     auth = new Buffer(@sid + ':' + @token).toString("base64")
     data = QS.stringify From: @from, To: to, Body: message
 
     @http("https://api.twilio.com")
-      .path("/2010-04-01/Accounts/#{@sid}/SMS/Messages.json")
+      .path("/2010-04-01/Accounts/#{@sid}/Messages.json")
       .header("Authorization", "Basic #{auth}")
       .header("Content-Type", "application/x-www-form-urlencoded")
       .post(data) (err, res, body) ->
@@ -69,8 +66,6 @@ class Twilio extends Adapter
         else
           json = JSON.parse(body)
           callback body.message
-
-exports.Twilio = Twilio
 
 exports.use = (robot) ->
   new Twilio robot

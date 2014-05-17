@@ -45,7 +45,7 @@ class Twilio extends Adapter
     return if body.length is 0
     user = @userForId from
 
-    nameRegex = "^[@]?#{name}"
+    nameRegex = "^[@]?#{@robot.name}"
     if body.match nameRegex is null
       console.log "Adding #{@robot.name} as a prefix to received SMS"
       body = @robot.name + ' ' + body

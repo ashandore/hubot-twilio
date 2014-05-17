@@ -11,8 +11,9 @@ class Twilio extends Adapter
     @robot = robot
     super robot
 
-  send: (user, strings...) ->
+  send: (envelope, strings...) ->
     body = strings.join "\n"
+    user = envelope.user
 
     console.log "Calling send_sms", body
     console.log user
@@ -23,8 +24,8 @@ class Twilio extends Adapter
       else
         console.log "Sending reply SMS: #{message.sid}, #{body} to #{user.id}"
 
-  reply: (user, strings...) ->
-    @send user, str for str in strings
+  reply: (envelope, strings...) ->
+    @send envelope, str for str in strings
 
   respond: (regex, callback) ->
     @hear regex, callback

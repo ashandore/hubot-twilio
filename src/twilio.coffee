@@ -14,7 +14,7 @@ class Twilio extends Adapter
   send: (user, strings...) ->
     body = strings.join "\n"
 
-    @send_sms body, user.id, (err, message) ->
+    @send_sms body, user.phone, (err, message) ->
       if err or not body?
         console.log "Error sending reply SMS: #{err}"
         console.log JSON.stringify(err, null, 4)
@@ -47,6 +47,7 @@ class Twilio extends Adapter
   receive_sms: (body, from) ->
     return if body.length is 0
     user = @robot.brain.userForId from
+    user.phone = from
 
     nameRegex = "^[@]?#{@robot.name}"
     if body.match nameRegex is null

@@ -56,7 +56,8 @@ class Twilio extends Adapter
 
     @receive new TextMessage user, body
 
-  send_sms: (body, to, callback) ->     
+  send_sms: (body, to, callback) -> 
+    console.log "Sending SMS to", to, ": ", body    
     @client.messages.create
       to: to
       from: @from

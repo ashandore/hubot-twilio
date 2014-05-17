@@ -55,20 +55,20 @@ class Twilio extends Adapter
     @receive new TextMessage user, body
 
   send_sms: (body, to, callback) ->     
-    @client.messages.create({  
-      to: to,
-      from: @from,    
+    @client.messages.create
+      to: to
+      from: @from
       body: body
-    }, function(err, message) { 
+    , (err, message) ->
       if err
-          callback err
-        else if res.statusCode is 201
-          json = JSON.parse(message)
-          callback null, message
-        else
-          json = JSON.parse(message)
-          callback message
-    })
+        callback err
+      else if res.statusCode is 201
+        json = JSON.parse(message)
+        callback null, message
+      else
+        json = JSON.parse(message)
+        callback message
+      return
 
 exports.Twilio = Twilio
 

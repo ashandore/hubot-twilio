@@ -50,10 +50,16 @@ class Twilio extends Adapter
     user = @robot.brain.userForId from
     user.phone = from
 
-    nameRegex = "^[@]?#{@robot.name}"
-    if body.match nameRegex is null
-      console.log "Adding #{@robot.name} as a prefix to received SMS"
-      body = @robot.name + ' ' + body
+    # Following the same name matching pattern as the Robot
+    if @robot.alias
+      alias = @robot.alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') # escape alias for regexp
+      newRegex = new RegExp("^(?:#{@robot.alias}[:,]?|#{@robot.name}[:,]?)", "i")
+    else
+      newRegex = new RegExp("^#{@robot.name}[:,]?", "i")
+
+    # Prefix message if there is no match
+    unless message.match(newRegex)
+      message = (@robot.name + " " ) + message
 
     @receive new TextMessage user, body
 

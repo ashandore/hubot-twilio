@@ -58,8 +58,8 @@ class Twilio extends Adapter
       newRegex = new RegExp("^#{@robot.name}[:,]?", "i")
 
     # Prefix message if there is no match
-    unless message.match(newRegex)
-      message = (@robot.name + " " ) + message
+    unless body.match(newRegex)
+      body = (@robot.name + " " ) + body
 
     @receive new TextMessage user, body
 

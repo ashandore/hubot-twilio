@@ -19,15 +19,15 @@ class Twilio extends Adapter
       @send_mms body, user.phone, (err, message) ->
         if err or not body?
           console.log "Error sending reply MMS: #{err}"
-        console.log JSON.stringify(err, null, 4)
+          console.log JSON.stringify(err, null, 4)
         else
-        console.log "Sending reply MMS: #{message.sid}, #{body} to #{user.id}"
+          console.log "Sending reply MMS: #{message.sid}, #{body} to #{user.id}"
 
     else
       @send_sms body, user.phone, (err, message) ->
         if err or not body?
           console.log "Error sending reply SMS: #{err}"
-         console.log JSON.stringify(err, null, 4)
+          console.log JSON.stringify(err, null, 4)
         else
           console.log "Sending reply SMS: #{message.sid}, #{body} to #{user.id}"
 

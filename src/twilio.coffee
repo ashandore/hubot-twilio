@@ -18,18 +18,14 @@ class Twilio extends Adapter
     if body.substring(0,4) == 'http'
       @send_mms body, user.phone, (err, message) ->
         if err or not body?
-          console.error(err.status, err.code, err.message)
-          console.error("Trouble sending reply MMS")
-
-
+          console.error("MMS:Error", err.status, err.code, err.message)
         else
           console.log "Sending reply MMS: #{message.sid}, #{body} to #{user.id}"
 
     else
       @send_sms body, user.phone, (err, message) ->
         if err or not body?
-          console.log "Error sending reply SMS: #{err}"
-          console.log JSON.stringify(err, null, 4)
+          console.error("SMS:Error", err.status, err.code, err.message)
         else
           console.log "Sending reply SMS: #{message.sid}, #{body} to #{user.id}"
 
@@ -80,6 +76,7 @@ class Twilio extends Adapter
       to: to
       from: @from
       media_url: body
+      body: body
     , (err, message) ->
       if err
         callback err

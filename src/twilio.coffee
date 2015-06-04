@@ -15,12 +15,21 @@ class Twilio extends Adapter
     body = strings.join "\n"
     user = envelope.user
 
-    @send_sms body, user.phone, (err, message) ->
-      if err or not body?
-        console.log "Error sending reply SMS: #{err}"
+    if body.substring(0,4) == 'http'
+      @send_mms body, user.phone, (err, message) ->
+        if err or not body?
+          console.log "Error sending reply MMS: #{err}"
         console.log JSON.stringify(err, null, 4)
-      else
-        console.log "Sending reply SMS: #{message.sid}, #{body} to #{user.id}"
+        else
+        console.log "Sending reply MMS: #{message.sid}, #{body} to #{user.id}"
+
+    else
+      @send_sms body, user.phone, (err, message) ->
+        if err or not body?
+          console.log "Error sending reply SMS: #{err}"
+         console.log JSON.stringify(err, null, 4)
+        else
+          console.log "Sending reply SMS: #{message.sid}, #{body} to #{user.id}"
 
   reply: (envelope, strings...) ->
     @send envelope, str for str in strings
@@ -62,6 +71,23 @@ class Twilio extends Adapter
       body = (@robot.name + " " ) + body
 
     @receive new TextMessage user, body
+
+  send_mms: (body, to, callback) ->
+    @client.messages.create
+      to: to
+      from: @from
+      body: body
+    , (err, message) ->
+      if err
+        callback err
+      else if res.statusCode is 201
+        json = JSON.parse(message)
+        callback null, message
+      else
+        json = JSON.parse(message)
+        callback message
+      return
+
 
   send_sms: (body, to, callback) ->
     @client.messages.create

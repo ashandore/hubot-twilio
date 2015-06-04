@@ -18,10 +18,10 @@ class Twilio extends Adapter
     if body.substring(0,4) == 'http'
       @send_mms body, user.phone, (err, message) ->
         if err or not body?
-          console.log(err)
+          console.log(require('util').inspect(err, true, 10))
           console.error("Trouble sending reply MMS")
 
-          
+
         else
           console.log "Sending reply MMS: #{message.sid}, #{body} to #{user.id}"
 

@@ -76,7 +76,7 @@ class Twilio extends Adapter
     @client.messages.create
       to: to
       from: @from
-      body: body
+      media_url: body
     , (err, message) ->
       if err
         callback err
